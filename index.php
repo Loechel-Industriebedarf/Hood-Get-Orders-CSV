@@ -8,9 +8,9 @@ require_once 'settings.php';
  * and parse it to csv. 
 */
 if(!file_exists($csvPath)){
-	$orders = getOrders(); //TODO: Pass variables
+	$orders = getOrders($username, $pw_hash, $lastDateStr);
 	$ordersCsv = convertXMLtoCSV($orders);
-	writeCSV($ordersCsv, $csvPath);
+	//writeCSV($ordersCsv, $csvPath);
 	writeDate($datePath);
 }
 else{
@@ -22,20 +22,23 @@ else{
 
 
 /*
- * Gets the orders as xml
+ * Gets the orders and converts their xml to an array.
+ * 
+ * @input string	$asdf	First input
+ * @return array   $array_data    The apis response as array.
 */
-function getOrders(){
+function getOrders($username, $pw_hash, $lastDateStr){
 	//Store your XML Request in a variable
     $input_xml = '
 	<?xml version="1.0" encoding="UTF-8"?>
-	<api type="public" version="2.0" user="" password="">
-		<accountName></accountName>				
-		<accountPass></accountPass>				
+	<api type="public" version="2.0.1" user="'. $username . '" password="' . $pw_hash . '">
+		<accountName>'. $username . '</accountName>
+		<accountPass>' . $pw_hash . '</accountPass>	
 		<function>orderList</function>			
 		
 		<dateRange>
 			<type>orderDate</type> 		
-			<startDate></startDate>		
+			<startDate>' . $lastDateStr . '</startDate>		
 			<endDate></endDate>		
 		</dateRange>
 		<orderID></orderID>		
@@ -44,7 +47,7 @@ function getOrders(){
 
 	$url = "https://www.hood.de/api.htm";
 
-	//setting the curl parameters.
+	//Setting the curl parameters.
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $url);
 	// Following line is compulsary to add as it is:
@@ -54,7 +57,7 @@ function getOrders(){
 	$data = curl_exec($ch);
 	curl_close($ch);
 
-	//convert the XML result into array
+	//Convert the XML result into array
 	$array_data = json_decode(json_encode(simplexml_load_string($data)), true);
 
 	print_r('<pre>');
@@ -68,6 +71,9 @@ function getOrders(){
 	
 /*
  * Converts the apis xml to csv
+ * 
+ * @input array    $array_data    The array that got generated from the apis xml. We use getOrders() to generate this variable.
+ * @return string   $csv    The csv files content.
 */	
 function convertXMLtoCSV($array_data){
 	$csv = generateCSVHeadline();
