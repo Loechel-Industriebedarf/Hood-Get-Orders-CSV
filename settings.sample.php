@@ -7,6 +7,9 @@
 $csvPath = "..\hoodOrder.csv";
 $datePath = "date.txt";
 
+$username = "";
+$pw_hash = hash('md5', '');
+
 date_default_timezone_set('Europe/Berlin');
 
 $lastDate = readDate($datePath);

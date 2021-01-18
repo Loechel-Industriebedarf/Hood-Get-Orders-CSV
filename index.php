@@ -15,7 +15,7 @@ if(!file_exists($csvPath)){
 	if($ordersCsv != ""){
 		writeCSV($ordersCsv, $csvPath);
 	}
-	//writeDate($datePath);
+	writeDate($datePath);
 }
 else{
 	echo "CSV file was not processed yet!";
