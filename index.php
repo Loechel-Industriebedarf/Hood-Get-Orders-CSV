@@ -15,7 +15,7 @@ if(!file_exists($csvPath)){
 	if($ordersCsv != ""){
 		writeCSV($ordersCsv, $csvPath);
 	}
-	writeDate($datePath);
+	//writeDate($datePath);
 }
 else{
 	echo "CSV file was not processed yet!";
@@ -59,6 +59,10 @@ function getOrders($username, $pw_hash, $lastDateStr){
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 300);
 	$data = curl_exec($ch);
+	if(curl_exec($ch) === false)
+	{
+		echo 'Curl-Fehler: ' . curl_error($ch);
+	}
 	curl_close($ch);
 
 	//Convert the XML result into array
@@ -97,67 +101,37 @@ function convertXMLtoCSV($array_data){
 		print_r($currentOrder);
 		print_r('</pre>');
 
+		echo "<br><br><br>";
+
 		$orderDetails = $currentOrder["details"];
 		$orderItems = $currentOrder["orderItems"];
 		$orderBuyer = $currentOrder["buyer"];
 		$orderShip = $currentOrder["shipAddress"];
 
-		print_r('<pre>');
-		print_r(sizeof($orderItems["item"]));
-		print_r('</pre>');
-
-		if(sizeof($orderItems["item"]) != 11){
-			foreach($orderItems["item"] as $orderItem){
-				$csv = $csv . $orderDetails["orderID"] . ";";
-				$csv = $csv . $orderDetails["date"] . ";";
-				$csv = $csv . $orderBuyer["email"] . ";";
-				$csv = $csv . $orderItem["itemNumber"] . ";";
-				$csv = $csv . $orderItem["quantity"] . ";";
-				$csv = $csv . $orderItem["price"]  . ";";		
-				$csv = $csv . $orderShip["firstName"] . " " . $orderShip["lastName"] . ";";
-				$csv = $csv . ";";
-				$csv = $csv . $orderShip["address"] . ";";
-				$csv = $csv . $orderShip["zip"] . ";";
-				$csv = $csv . $orderShip["city"] . ";";
-				$csv = $csv . $orderShip["countryTwoDigit"] . ";";
-				$csv = $csv . $orderBuyer["firstName"] . " " . $orderBuyer["lastName"] . ";";
-				$csv = $csv . ";";
-				$csv = $csv . $orderBuyer["address"] . ";";
-				$csv = $csv . $orderBuyer["zip"] . ";";
-				$csv = $csv . $orderBuyer["city"] . ";";
-				$csv = $csv . $orderBuyer["countryTwoDigit"] . ";";
-				$csv = $csv . ";";
-				$csv = $csv . $orderDetails["paymentTypeCode"] . ";";
-				$csv = $csv . $orderDetails["shipCost"] . ";";
-				$csv = $csv . $orderDetails["paymentTransactionID"] . ";";
-				$csv = $csv . "\r\n";
-			}
-		}
-		else{
-			$csv = $csv . $orderDetails["orderID"] . ";";
-			$csv = $csv . $orderDetails["date"] . ";";
-			$csv = $csv . $orderBuyer["email"] . ";";
-			$csv = $csv . $orderItems["item"]["itemNumber"] . ";";
-			$csv = $csv . $orderItems["item"]["quantity"] . ";";
-			$csv = $csv . $orderItems["item"]["price"]  . ";";	
-			$csv = $csv . $orderShip["firstName"] . " " . $orderShip["lastName"] . ";";
-			$csv = $csv . ";";
-			$csv = $csv . $orderShip["address"] . ";";
-			$csv = $csv . $orderShip["zip"] . ";";
-			$csv = $csv . $orderShip["city"] . ";";
-			$csv = $csv . $orderShip["countryTwoDigit"] . ";";
-			$csv = $csv . $orderBuyer["firstName"] . " " . $orderBuyer["lastName"] . ";";
-			$csv = $csv . ";";
-			$csv = $csv . $orderBuyer["address"] . ";";
-			$csv = $csv . $orderBuyer["zip"] . ";";
-			$csv = $csv . $orderBuyer["city"] . ";";
-			$csv = $csv . $orderBuyer["countryTwoDigit"] . ";";
-			$csv = $csv . ";";
-			$csv = $csv . $orderDetails["paymentTypeCode"] . ";";
-			$csv = $csv . $orderDetails["shipCost"] . ";";
-			$csv = $csv . $orderDetails["paymentTransactionID"] . ";";
-			$csv = $csv . "\r\n";
-		}		
+		$csv = $csv . $orderDetails["orderID"] . ";";
+		$csv = $csv . $orderDetails["date"] . ";";
+		$csv = $csv . $orderBuyer["email"] . ";";
+		$csv = $csv . $orderItems["item"]["itemNumber"] . ";";
+		$csv = $csv . $orderItems["item"]["quantity"] . ";";
+		$csv = $csv . $orderItems["item"]["price"]  . ";";	
+		$csv = $csv . $orderShip["firstName"] . " " . $orderShip["lastName"] . ";";
+		$csv = $csv . ";";
+		$csv = $csv . $orderShip["address"] . ";";
+		$csv = $csv . $orderShip["zip"] . ";";
+		$csv = $csv . $orderShip["city"] . ";";
+		$csv = $csv . $orderShip["countryTwoDigit"] . ";";
+		$csv = $csv . $orderBuyer["firstName"] . " " . $orderBuyer["lastName"] . ";";
+		$csv = $csv . ";";
+		$csv = $csv . $orderBuyer["address"] . ";";
+		$csv = $csv . $orderBuyer["zip"] . ";";
+		$csv = $csv . $orderBuyer["city"] . ";";
+		$csv = $csv . $orderBuyer["countryTwoDigit"] . ";";
+		$csv = $csv . ";";
+		$csv = $csv . $orderDetails["paymentTypeCode"] . ";";
+		$csv = $csv . $orderDetails["shipCost"] . ";";
+		$csv = $csv . $orderDetails["paymentTransactionID"] . ";";
+		$csv = $csv . $orderBuyer["accountName"] . ";";
+		$csv = $csv . "\r\n";	
 	}
 
 	if($csv != ""){
@@ -182,7 +156,7 @@ function generateCSVHeadline(){
             . "DeliveryZIP;DeliveryCity;DeliveryCountry;"
             . "InvoiceClient;InvoiceClient2;InvoiceStreet;"
             . "InvoiceZIP;InvoiceCity;InvoiceCountry;"
-			. "Phone;PaymentType;Shipping;TransactionId" . "\r\n";
+			. "Phone;PaymentType;Shipping;TransactionId;Username" . "\r\n";
     return $csv_headline;
 }
 
