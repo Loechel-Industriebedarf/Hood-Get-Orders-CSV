@@ -14,8 +14,8 @@ if(!file_exists($csvPath)){
 	echo $ordersCsv;
 	if($ordersCsv != ""){
 		writeCSV($ordersCsv, $csvPath);
+		writeDate($datePath);
 	}
-	writeDate($datePath);
 }
 else{
 	echo "CSV file was not processed yet!";
@@ -97,11 +97,13 @@ function convertXMLtoCSV($array_data){
 
 
 	foreach($array_data_order as $currentOrder){
+		
 		print_r('<pre>');
 		print_r($currentOrder);
 		print_r('</pre>');
 
 		echo "<br><br><br>";
+		
 
 		$orderDetails = $currentOrder["details"];
 		$orderItems = $currentOrder["orderItems"];
@@ -127,10 +129,16 @@ function convertXMLtoCSV($array_data){
 		$csv = $csv . $orderBuyer["city"] . ";";
 		$csv = $csv . $orderBuyer["countryTwoDigit"] . ";";
 		$csv = $csv . ";";
-		$csv = $csv . $orderDetails["paymentTypeCode"] . ";";
+		//If status is "Ausstehend", set the paymentTypeCode to unpaid
+		if($orderDetails["orderStatusBuyer"] == "Ausstehend"){
+			$csv = $csv . "Unpaid;";
+		}
+		else{
+			$csv = $csv . $orderDetails["paymentTypeCode"] . ";";
+		}
+		
 		$csv = $csv . $orderDetails["shipCost"] . ";";
-		$csv = $csv . $orderDetails["paymentTransactionID"] . ";";
-		$csv = $csv . $orderBuyer["accountName"] . ";";
+		$csv = $csv . $orderDetails["paymentTransactionID"] . "";
 		$csv = $csv . "\r\n";	
 	}
 
