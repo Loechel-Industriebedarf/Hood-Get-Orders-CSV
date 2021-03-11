@@ -97,49 +97,67 @@ function convertXMLtoCSV($array_data){
 
 
 	foreach($array_data_order as $currentOrder){
-		
+		/*
 		print_r('<pre>');
 		print_r($currentOrder);
 		print_r('</pre>');
+		echo sizeof($currentOrder["orderItems"]["item"]);
 
 		echo "<br><br><br>";
-		
+		*/
 
-		$orderDetails = $currentOrder["details"];
-		$orderItems = $currentOrder["orderItems"];
-		$orderBuyer = $currentOrder["buyer"];
-		$orderShip = $currentOrder["shipAddress"];
-
-		$csv = $csv . $orderDetails["orderID"] . ";";
-		$csv = $csv . $orderDetails["date"] . ";";
-		$csv = $csv . $orderBuyer["email"] . ";";
-		$csv = $csv . $orderItems["item"]["itemNumber"] . ";";
-		$csv = $csv . $orderItems["item"]["quantity"] . ";";
-		$csv = $csv . $orderItems["item"]["price"]  . ";";	
-		$csv = $csv . $orderShip["firstName"] . " " . $orderShip["lastName"] . ";";
-		$csv = $csv . ";";
-		$csv = $csv . $orderShip["address"] . ";";
-		$csv = $csv . $orderShip["zip"] . ";";
-		$csv = $csv . $orderShip["city"] . ";";
-		$csv = $csv . $orderShip["countryTwoDigit"] . ";";
-		$csv = $csv . $orderBuyer["firstName"] . " " . $orderBuyer["lastName"] . ";";
-		$csv = $csv . ";";
-		$csv = $csv . $orderBuyer["address"] . ";";
-		$csv = $csv . $orderBuyer["zip"] . ";";
-		$csv = $csv . $orderBuyer["city"] . ";";
-		$csv = $csv . $orderBuyer["countryTwoDigit"] . ";";
-		$csv = $csv . ";";
-		//If status is "Ausstehend", set the paymentTypeCode to unpaid
-		if($orderDetails["orderStatusBuyer"] == "Ausstehend"){
-			$csv = $csv . "Unpaid;";
+		if(sizeof($currentOrder["orderItems"]["item"]) == 10){
+			$trueItemSize = 1;
 		}
 		else{
-			$csv = $csv . $orderDetails["paymentTypeCode"] . ";";
+			$trueItemSize = sizeof($currentOrder["orderItems"]["item"]);
 		}
 		
-		$csv = $csv . $orderDetails["shipCost"] . ";";
-		$csv = $csv . $orderDetails["paymentTransactionID"] . "";
-		$csv = $csv . "\r\n";	
+		for($i = 0; $i < $trueItemSize; $i++){
+			$orderDetails = $currentOrder["details"];
+			$orderBuyer = $currentOrder["buyer"];
+			$orderItem = $currentOrder["orderItems"]["item"];
+			$orderShip = $currentOrder["shipAddress"];
+	
+			$csv = $csv . $orderDetails["orderID"] . ";";
+			$csv = $csv . $orderDetails["date"] . ";";
+			$csv = $csv . $orderBuyer["email"] . ";";
+			if($trueItemSize == 1){
+				$csv = $csv . $orderItem["itemNumber"] . ";";
+				$csv = $csv . $orderItem["quantity"] . ";";
+				$csv = $csv . $orderItem["price"]  . ";";
+			}
+			else{
+				$csv = $csv . $orderItem[$i]["itemNumber"] . ";";
+				$csv = $csv . $orderItem[$i]["quantity"] . ";";
+				$csv = $csv . $orderItem[$i]["price"]  . ";";
+			}			
+			$csv = $csv . $orderShip["firstName"] . " " . $orderShip["lastName"] . ";";
+			$csv = $csv . ";";
+			$csv = $csv . $orderShip["address"] . ";";
+			$csv = $csv . $orderShip["zip"] . ";";
+			$csv = $csv . $orderShip["city"] . ";";
+			$csv = $csv . $orderShip["countryTwoDigit"] . ";";
+			$csv = $csv . $orderBuyer["firstName"] . " " . $orderBuyer["lastName"] . ";";
+			$csv = $csv . ";";
+			$csv = $csv . $orderBuyer["address"] . ";";
+			$csv = $csv . $orderBuyer["zip"] . ";";
+			$csv = $csv . $orderBuyer["city"] . ";";
+			$csv = $csv . $orderBuyer["countryTwoDigit"] . ";";
+			$csv = $csv . ";";
+			//If status is "Ausstehend", set the paymentTypeCode to unpaid
+			if($orderDetails["orderStatusBuyer"] == "Ausstehend"){
+				$csv = $csv . "Unpaid;";
+			}
+			else{
+				$csv = $csv . $orderDetails["paymentTypeCode"] . ";";
+			}
+			
+			$csv = $csv . $orderDetails["shipCost"] . ";";
+			$csv = $csv . $orderDetails["paymentTransactionID"] . "";
+			$csv = $csv . "\r\n";	
+		}
+		
 	}
 
 	if($csv != ""){
