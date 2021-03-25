@@ -98,18 +98,19 @@ function convertXMLtoCSV($array_data){
 
 	foreach($array_data_order as $currentOrder){
 		
+		/*
 		print_r('<pre>');
 		print_r($currentOrder);
 		print_r('</pre>');
 		echo "SIZE: " . sizeof($currentOrder["orderItems"]["item"]);
 
 		echo "<br><br><br>";
-		
+		*/
 		
 
 		//If the customer orders exactly 10 or 11 differnt items, we will get an error :)
 		//Sometimes we get 10 and sometimes 11 as result of item size, because mpn is not always filled
-		if(sizeof($currentOrder["orderItems"]["item"]) == 10 || sizeof($currentOrder["orderItems"]["item"]) == 11){
+		if(sizeof($currentOrder["orderItems"]["item"]) == 9 || sizeof($currentOrder["orderItems"]["item"]) == 10 || sizeof($currentOrder["orderItems"]["item"]) == 11){
 			$trueItemSize = 1;
 		}
 		else{
